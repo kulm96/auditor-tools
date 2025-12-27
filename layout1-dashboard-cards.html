@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Auditor Tools – Layout 1 (Dashboard Cards)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Tailwind via CDN for prototype purposes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="h-full bg-slate-950 text-slate-100">
+    <div class="min-h-full flex flex-col">
+      <!-- Top bar -->
+      <header
+        class="border-b border-slate-800 bg-slate-900/80 backdrop-blur flex items-center justify-between px-6 py-3"
+      >
+        <div class="flex items-center gap-2">
+          <span
+            class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+          >
+            <span class="text-xs font-semibold">AT</span>
+          </span>
+          <div class="leading-tight">
+            <div class="text-sm font-semibold tracking-tight">
+              Auditor Tools
+            </div>
+            <div class="text-[11px] text-slate-400">
+              Experimental UI – Dashboard Cards
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            class="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-slate-100 transition"
+          >
+            <span
+              class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/15 text-[9px] text-emerald-400 border border-emerald-500/40"
+              >●</span
+            >
+            Session: Demo Only
+          </button>
+
+          <button
+            class="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-slate-100 transition"
+          >
+            <span class="i-lucide-settings-2 h-3.5 w-3.5 block">
+              <!-- icon placeholder -->
+            </span>
+            Settings
+          </button>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="flex-1 flex flex-col px-6 py-6 gap-6">
+        <!-- Intro / Overview -->
+        <section class="flex flex-col gap-3">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 class="text-xl font-semibold tracking-tight">
+                Choose a tool to get started
+              </h1>
+              <p class="text-sm text-slate-400 max-w-2xl">
+                This is a non-functioning mockup of the Auditor Tools start
+                screen. Each card represents a task you’ll eventually be able
+                to launch from within the Tauri desktop app.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-400">
+              <span
+                class="inline-flex h-6 items-center rounded-full border border-slate-700 bg-slate-900/80 px-2"
+              >
+                Prototype · Layout 1
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Task grid -->
+        <section
+          class="grid gap-4 md:grid-cols-2 xl:grid-cols-3 auto-rows-[minmax(140px,1fr)]"
+        >
+          <!-- File Conversion -->
+          <button
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left shadow-sm hover:border-emerald-500/50 hover:shadow-emerald-500/10 transition"
+          >
+            <div
+              class="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-300 border border-emerald-500/30"
+            >
+              <span
+                class="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.7)]"
+              ></span>
+              File Conversion
+            </div>
+            <h2 class="text-sm font-medium">Convert to Gemini‑friendly formats</h2>
+            <p class="mt-1.5 text-xs text-slate-400">
+              Normalize mixed evidence sets into formats that work cleanly with
+              Gemini (PDF, TXT, DOCX) while preserving structure where
+              possible.
+            </p>
+            <div class="mt-auto flex w-full items-center justify-between pt-4">
+              <span class="text-[11px] text-slate-500">
+                Input: PDF, DOCX, XLSX, TXT
+              </span>
+              <span
+                class="text-[11px] font-medium text-emerald-400 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
+            </div>
+          </button>
+
+          <!-- DOCX/XLSX unlocker -->
+          <button
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-sky-400/50 hover:shadow-sky-400/10 transition"
+          >
+            <div
+              class="mb-3 inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-2 py-1 text-[11px] text-sky-300 border border-sky-500/30"
+            >
+              <span class="h-1.5 w-1.5 rounded-full bg-sky-400"></span>
+              DOCX/XLSX Unlocker
+            </div>
+            <h2 class="text-sm font-medium">Remove document protection</h2>
+            <p class="mt-1.5 text-xs text-slate-400">
+              Strip editing and form protections from DOCX and XLSX evidence
+              files to make remediation and markup work easier.
+            </p>
+            <div class="mt-auto flex w-full items-center justify-between pt-4">
+              <span class="text-[11px] text-slate-500">
+                Input: DOCX, XLSX · Output: Unlocked copy
+              </span>
+              <span
+                class="text-[11px] font-medium text-sky-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
+            </div>
+          </button>
+
+          <!-- DOCX Checkbox Fixer -->
+          <button
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-fuchsia-400/50 hover:shadow-fuchsia-400/10 transition"
+          >
+            <div
+              class="mb-3 inline-flex items-center gap-2 rounded-full bg-fuchsia-500/10 px-2 py-1 text-[11px] text-fuchsia-300 border border-fuchsia-500/30"
+            >
+              <span class="h-1.5 w-1.5 rounded-full bg-fuchsia-400"></span>
+              DOCX Checkbox Fixer
+            </div>
+            <h2 class="text-sm font-medium">Normalize form checkboxes</h2>
+            <p class="mt-1.5 text-xs text-slate-400">
+              Convert form-fillable checkboxes into simple, stable symbols that
+              behave well across versions and viewers.
+            </p>
+            <div class="mt-auto flex w-full items-center justify-between pt-4">
+              <span class="text-[11px] text-slate-500">
+                Target: PCI DSS templates, internal forms
+              </span>
+              <span
+                class="text-[11px] font-medium text-fuchsia-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
+            </div>
+          </button>
+
+          <!-- QA Tool -->
+          <button
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-amber-400/50 hover:shadow-amber-400/10 transition"
+          >
+            <div
+              class="mb-3 inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-2 py-1 text-[11px] text-amber-300 border border-amber-500/30"
+            >
+              <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+              PCI DSS QA Tool
+            </div>
+            <h2 class="text-sm font-medium">Run structured QA on ROCs/AOCs</h2>
+            <p class="mt-1.5 text-xs text-slate-400">
+              Apply a repeatable QA checklist to PCI DSS ROCs and AOCs, track
+              issues, and export findings for review.
+            </p>
+            <div class="mt-auto flex w-full items-center justify-between pt-4">
+              <span class="text-[11px] text-slate-500">
+                Focus: ROC consistency, scoping, evidence mapping
+              </span>
+              <span
+                class="text-[11px] font-medium text-amber-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
+            </div>
+          </button>
+
+          <!-- Auto-file-opener -->
+          <button
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-cyan-400/50 hover:shadow-cyan-400/10 transition"
+          >
+            <div
+              class="mb-3 inline-flex items-center gap-2 rounded-full bg-cyan-500/10 px-2 py-1 text-[11px] text-cyan-300 border border-cyan-500/30"
+            >
+              <span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span>
+              Auto‑file‑opener
+            </div>
+            <h2 class="text-sm font-medium">Rapid evidence folder review</h2>
+            <p class="mt-1.5 text-xs text-slate-400">
+              Iterate through all files in an evidence folder using your
+              default system viewers so you can review quickly and annotate.
+            </p>
+            <div class="mt-auto flex w-full items-center justify-between pt-4">
+              <span class="text-[11px] text-slate-500">
+                Backed by a Python helper script
+              </span>
+              <span
+                class="text-[11px] font-medium text-cyan-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
+            </div>
+          </button>
+
+          <!-- PDF Password Remover -->
+          <button
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-rose-400/50 hover:shadow-rose-400/10 transition"
+          >
+            <div
+              class="mb-3 inline-flex items-center gap-2 rounded-full bg-rose-500/10 px-2 py-1 text-[11px] text-rose-300 border border-rose-500/30"
+            >
+              <span class="h-1.5 w-1.5 rounded-full bg-rose-400"></span>
+              PDF Password Remover
+            </div>
+            <h2 class="text-sm font-medium">Create working copies for review</h2>
+            <p class="mt-1.5 text-xs text-slate-400">
+              Generate non‑password‑protected review copies of PDFs while
+              preserving the original file for chain‑of‑custody.
+            </p>
+            <div class="mt-auto flex w-full items-center justify-between pt-4">
+              <span class="text-[11px] text-slate-500">
+                For permitted internal workflows only
+              </span>
+              <span
+                class="text-[11px] font-medium text-rose-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
+            </div>
+          </button>
+
+          <!-- PCI DSS ROC Checkbox Report -->
+          <button
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-lime-400/50 hover:shadow-lime-400/10 transition md:col-span-2 xl:col-span-3"
+          >
+            <div class="flex w-full items-start justify-between gap-3">
+              <div>
+                <div
+                  class="mb-3 inline-flex items-center gap-2 rounded-full bg-lime-500/10 px-2 py-1 text-[11px] text-lime-300 border border-lime-500/30"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-lime-400"></span>
+                  PCI DSS ROC Checkbox Report
+                </div>
+                <h2 class="text-sm font-medium">
+                  Export a complete checkbox state matrix
+                </h2>
+                <p class="mt-1.5 text-xs text-slate-400 max-w-2xl">
+                  Parse ROC documents, detect checkbox states, and generate an
+                  XLSX report summarizing all responses by requirement,
+                  sub‑requirement, and testing procedure.
+                </p>
+              </div>
+              <div
+                class="hidden md:flex flex-col items-end gap-1 text-[11px] text-slate-500"
+              >
+                <span>Output: XLSX</span>
+                <span>Use case: Peer review, QA, variance analysis</span>
+              </div>
+            </div>
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex flex-wrap gap-2 text-[11px] text-slate-400">
+                <span
+                  class="inline-flex items-center rounded-full bg-slate-900/80 px-2 py-1 border border-slate-700/80"
+                  >Checkbox normalisation</span
+                >
+                <span
+                  class="inline-flex items-center rounded-full bg-slate-900/80 px-2 py-1 border border-slate-700/80"
+                  >ROC parsing</span
+                >
+                <span
+                  class="inline-flex items-center rounded-full bg-slate-900/80 px-2 py-1 border border-slate-700/80"
+                  >Excel report template</span
+                >
+              </div>
+              <span
+                class="text-[11px] font-medium text-lime-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
+            </div>
+          </button>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
+
+
+

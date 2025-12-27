@@ -1,0 +1,9 @@
+[workspace]
+members = [
+  "src-tauri",
+  "file-conversion-legacy/ept-main/src-tauri",
+]
+
+resolver = "2"
+
+
