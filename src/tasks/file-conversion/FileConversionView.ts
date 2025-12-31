@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 
 export interface FileConversionViewOptions {
   onBackToDashboard: () => void;
@@ -53,12 +54,28 @@ export function renderFileConversionView(
           <div class="flex flex-col gap-3">
             <label class="flex flex-col gap-1 text-xs text-slate-300">
               Input path (file or folder)
-              <input
-                type="text"
-                data-field="input-path"
-                class="rounded-md border border-slate-700 bg-slate-950/60 px-2 py-1.5 text-xs text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="/path/to/evidence"
-              />
+              <div class="flex items-center gap-2">
+                <input
+                  type="text"
+                  data-field="input-path"
+                  class="flex-1 rounded-md border border-slate-700 bg-slate-950/60 px-2 py-1.5 text-xs text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="/path/to/evidence"
+                />
+                <button
+                  type="button"
+                  data-action="browse-folder"
+                  class="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-slate-100 transition whitespace-nowrap"
+                >
+                  Browse Folder
+                </button>
+                <button
+                  type="button"
+                  data-action="browse-file"
+                  class="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-slate-100 transition whitespace-nowrap"
+                >
+                  Browse File
+                </button>
+              </div>
             </label>
 
             <div class="flex items-center gap-2">
@@ -114,6 +131,12 @@ export function renderFileConversionView(
   const inputField = root.querySelector<HTMLInputElement>(
     '[data-field="input-path"]',
   );
+  const browseFolderButton = root.querySelector<HTMLButtonElement>(
+    '[data-action="browse-folder"]',
+  );
+  const browseFileButton = root.querySelector<HTMLButtonElement>(
+    '[data-action="browse-file"]',
+  );
   const logPanel = root.querySelector<HTMLPreElement>(
     '[data-panel="log"]',
   );
@@ -132,6 +155,68 @@ export function renderFileConversionView(
   clearButton?.addEventListener("click", () => {
     if (logPanel) {
       logPanel.textContent = "";
+    }
+  });
+
+  browseFolderButton?.addEventListener("click", async () => {
+    try {
+      const selected = await open({
+        directory: true,
+        multiple: false,
+      });
+
+      if (selected && typeof selected === "string" && inputField) {
+        inputField.value = selected;
+      } else if (
+        selected &&
+        Array.isArray(selected) &&
+        selected.length > 0 &&
+        inputField
+      ) {
+        inputField.value = selected[0];
+      }
+    } catch (error) {
+      appendLog(
+        `Failed to open folder dialog: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  });
+
+  browseFileButton?.addEventListener("click", async () => {
+    try {
+      const selected = await open({
+        directory: false,
+        multiple: false,
+        filters: [
+          {
+            name: "Archive Files",
+            extensions: ["zip"],
+          },
+          {
+            name: "All Files",
+            extensions: ["*"],
+          },
+        ],
+      });
+
+      if (selected && typeof selected === "string" && inputField) {
+        inputField.value = selected;
+      } else if (
+        selected &&
+        Array.isArray(selected) &&
+        selected.length > 0 &&
+        inputField
+      ) {
+        inputField.value = selected[0];
+      }
+    } catch (error) {
+      appendLog(
+        `Failed to open file dialog: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
     }
   });
 

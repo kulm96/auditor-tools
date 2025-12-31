@@ -3,7 +3,7 @@
 
 export function renderDashboard(root: HTMLElement) {
   root.innerHTML = `
-    <div class="min-h-full flex flex-col bg-slate-950 text-slate-100">
+    <div class="min-h-full flex flex-col">
       <header
         class="border-b border-slate-800 bg-slate-900/80 backdrop-blur flex items-center justify-between px-6 py-3"
       >
@@ -25,22 +25,22 @@ export function renderDashboard(root: HTMLElement) {
 
         <div class="flex items-center gap-3">
           <button
-            class="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300"
+            class="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-slate-100 transition"
             type="button"
           >
             <span
               class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/15 text-[9px] text-emerald-400 border border-emerald-500/40"
               >●</span
             >
-            Session: Local
+            Session: Local Settings
           </button>
 
           <button
-            class="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300"
+            class="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500 hover:text-slate-100 transition"
             type="button"
           >
-            <span class="h-3.5 w-3.5 block">
-              <!-- settings icon placeholder -->
+            <span class="i-lucide-settings-2 h-3.5 w-3.5 block">
+              <!-- icon placeholder -->
             </span>
             Settings
           </button>
@@ -95,11 +95,11 @@ export function renderDashboard(root: HTMLElement) {
               <span class="text-[11px] text-slate-500">
                 Input: PDF, DOCX, XLSX, TXT
               </span>
-              <span
-                class="text-[11px] font-medium text-emerald-400 opacity-0 group-hover:opacity-100 transition"
-              >
-                Open →
-              </span>
+            <span
+              class="text-[11px] font-medium text-emerald-400 opacity-0 group-hover:opacity-100 transition"
+            >
+                Open prototype →
+            </span>
             </div>
           </button>
 
@@ -173,7 +173,7 @@ export function renderDashboard(root: HTMLElement) {
           </button>
 
           <button
-            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left"
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-cyan-400/50 hover:shadow-cyan-400/10 transition"
             type="button"
           >
             <div
@@ -191,13 +191,17 @@ export function renderDashboard(root: HTMLElement) {
               <span class="text-[11px] text-slate-500">
                 Backed by a Python helper script
               </span>
+              <span
+                class="text-[11px] font-medium text-cyan-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
             </div>
           </button>
 
           <button
-            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900/40 to-slate-950/40 px-4 py-4 text-left md:col-span-2 xl:col-span-3 opacity-40 cursor-not-allowed pointer-events-none"
+            class="group relative flex flex-col items-start rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950/60 px-4 py-4 text-left hover:border-lime-400/50 hover:shadow-lime-400/10 transition md:col-span-2 xl:col-span-3"
             type="button"
-            aria-disabled="true"
           >
             <div class="flex w-full items-start justify-between gap-3">
               <div>
@@ -238,6 +242,11 @@ export function renderDashboard(root: HTMLElement) {
                   >Excel report template</span
                 >
               </div>
+              <span
+                class="text-[11px] font-medium text-lime-300 opacity-0 group-hover:opacity-100 transition"
+              >
+                Open prototype →
+              </span>
             </div>
           </button>
         </section>
