@@ -44,7 +44,7 @@ impl ConversionEngine {
             .context("File has no parent directory")?
             .join(&output_filename);
 
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "Converting {} to {}",
             file_path.display(),
             output_path.display()
@@ -71,7 +71,7 @@ impl ConversionEngine {
             .arg(output_dir)
             .arg(file_path);
 
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "Executing LibreOffice command: {:?} {:?}",
             libreoffice_cmd,
             cmd.get_args().collect::<Vec<_>>()
@@ -83,7 +83,7 @@ impl ConversionEngine {
         let stdout_msg = String::from_utf8_lossy(&output.stdout);
         let stderr_msg = String::from_utf8_lossy(&output.stderr);
         
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "LibreOffice exit status: {:?}, stdout: {}, stderr: {}",
             output.status.code(),
             stdout_msg,
@@ -111,7 +111,7 @@ impl ConversionEngine {
             .and_then(|s| s.to_str())
             .unwrap_or("converted");
         let possible_pdf = output_dir.join(format!("{}.pdf", file_stem));
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "Checking for PDF output: {} (exists: {}), expected: {} (exists: {})",
             possible_pdf.display(),
             possible_pdf.exists(),
@@ -120,7 +120,7 @@ impl ConversionEngine {
         ));
         
         if possible_pdf.exists() && !output_path.exists() {
-            self.logger.info(&format!(
+            self.logger.debug(&format!(
                 "Found PDF with original name, renaming {} to {}",
                 possible_pdf.display(),
                 output_path.display()
@@ -130,7 +130,7 @@ impl ConversionEngine {
         }
 
         if output_path.exists() {
-            self.logger.info(&format!("Successfully converted to: {}", output_path.display()));
+            self.logger.debug(&format!("Successfully converted to: {}", output_path.display()));
             Ok(Some(output_path))
         } else {
             Err(anyhow::anyhow!("Conversion completed but output file not found"))
@@ -138,7 +138,7 @@ impl ConversionEngine {
     }
 
     fn convert_excel_to_markdown(&self, file_path: &Path, output_path: &Path) -> Result<Option<PathBuf>> {
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "Converting Excel file {} to markdown",
             file_path.display()
         ));
@@ -183,7 +183,7 @@ impl ConversionEngine {
         std::fs::write(output_path, markdown_content.join("\n"))
             .with_context(|| format!("Failed to write markdown file: {}", output_path.display()))?;
 
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "Successfully converted Excel file to markdown: {} (processed {} sheet(s))",
             output_path.display(),
             sheet_names.len()
@@ -203,7 +203,7 @@ impl ConversionEngine {
                 continue;
             }
 
-            self.logger.info(&format!("Processing sheet: {}", sheet_name));
+            self.logger.debug(&format!("Processing sheet: {}", sheet_name));
 
             // Read the sheet into a variable (stored as Vec<Vec<String>>)
             let sheet_data: Vec<Vec<String>> = match workbook.worksheet_range(sheet_name) {
@@ -262,7 +262,7 @@ impl ConversionEngine {
                 continue;
             }
 
-            self.logger.info(&format!("Processing sheet: {}", sheet_name));
+            self.logger.debug(&format!("Processing sheet: {}", sheet_name));
 
             // Read the sheet into a variable (stored as Vec<Vec<String>>)
             let sheet_data: Vec<Vec<String>> = match workbook.worksheet_range(sheet_name) {
@@ -400,7 +400,7 @@ impl ConversionEngine {
         if let Ok(env_path) = std::env::var("EPT_LIBREOFFICE_PATH") {
             let path = PathBuf::from(&env_path);
             if path.exists() {
-                self.logger.info(&format!("Using LibreOffice from EPT_LIBREOFFICE_PATH: {}", env_path));
+                self.logger.debug(&format!("Using LibreOffice from EPT_LIBREOFFICE_PATH: {}", env_path));
                 return Ok(path);
             } else {
                 self.logger.warning(&format!("EPT_LIBREOFFICE_PATH is set to {}, but file does not exist", env_path));

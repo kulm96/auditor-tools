@@ -198,7 +198,7 @@ impl DecompressionEngine {
     }
 
     fn decompress_zip(&mut self, zip_path: &Path) -> Result<()> {
-        self.logger.info(&format!("Decompressing ZIP: {}", zip_path.display()));
+        self.logger.debug(&format!("Decompressing ZIP: {}", zip_path.display()));
         
         let output_path = self.expand_zip_to_folder(zip_path)?;
         
@@ -209,7 +209,7 @@ impl DecompressionEngine {
     }
 
     fn decompress_gz(&mut self, gz_path: &Path) -> Result<()> {
-        self.logger.info(&format!("Decompressing GZ: {}", gz_path.display()));
+        self.logger.debug(&format!("Decompressing GZ: {}", gz_path.display()));
         
         let file_stem = gz_path
             .file_stem()
@@ -236,7 +236,7 @@ impl DecompressionEngine {
         std::io::copy(&mut decoder, &mut output_file)
             .context("Failed to decompress GZ file")?;
         
-        self.logger.info(&format!("Successfully decompressed GZ to: {}", output_path.display()));
+        self.logger.debug(&format!("Successfully decompressed GZ to: {}", output_path.display()));
         
         // If the output is another archive, process it
         if self.is_compressed_file(&output_path) {

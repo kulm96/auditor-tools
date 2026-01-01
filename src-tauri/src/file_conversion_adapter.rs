@@ -15,14 +15,14 @@ pub struct FileConversionResult {
     pub report_path: Option<String>,
 }
 
-/// Adapter entrypoint for File Conversion.
+/// Adapter entrypoint for File Conversion (async version).
 ///
 /// This adapter delegates to the ProcessController which handles the full
 /// file conversion pipeline: decompression, scanning, conversion, hashing,
-/// and report generation.
-pub fn start_file_conversion(
+/// and report generation. Runs in a background task to allow real-time event processing.
+pub async fn start_file_conversion_async(
     input_path: String,
-    state: &State<'_, AppState>,
+    state: tauri::State<'_, AppState>,
 ) -> Result<FileConversionResult, String> {
     if input_path.trim().is_empty() {
         return Err("Input path must not be empty.".to_string());
@@ -46,9 +46,18 @@ pub fn start_file_conversion(
     };
     
     let app_handle_for_controller = app_handle_clone.ok_or("App handle not initialized".to_string())?;
-    let mut controller = ProcessController::new(state.logger.clone(), app_handle_for_controller);
+    let logger = state.logger.clone();
     
-    match controller.start_processing(&path) {
+    // Spawn the processing in a blocking task so events can be processed in real-time
+    // Move path into the closure
+    let result = tokio::task::spawn_blocking(move || {
+        let mut controller = ProcessController::new(logger.clone(), app_handle_for_controller);
+        controller.start_processing(&path)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?;
+    
+    match result {
         Ok(ProcessingResult {
             staging_path,
             llm_output_path,

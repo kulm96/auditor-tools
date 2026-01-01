@@ -39,8 +39,8 @@ fn ping() -> String {
 }
 
 #[tauri::command]
-fn start_file_conversion(input_path: String, state: tauri::State<'_, AppState>) -> Result<FileConversionResult, String> {
-    file_conversion_adapter::start_file_conversion(input_path, &state)
+async fn start_file_conversion(input_path: String, state: tauri::State<'_, AppState>) -> Result<FileConversionResult, String> {
+    file_conversion_adapter::start_file_conversion_async(input_path, state).await
 }
 
 #[tauri::command]

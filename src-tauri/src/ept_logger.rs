@@ -65,6 +65,10 @@ impl EPTLogger {
         self.log("ERROR", message);
     }
 
+    pub fn debug(&self, message: &str) {
+        self.log("DEBUG", message);
+    }
+
     pub fn get_logs(&self) -> Vec<LogEntry> {
         self.logs.lock().unwrap().clone()
     }

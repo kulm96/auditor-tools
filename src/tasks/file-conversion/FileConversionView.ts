@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import { listen } from "@tauri-apps/api/event";
 
 export interface FileConversionViewOptions {
   onBackToDashboard: () => void;
@@ -102,13 +103,23 @@ export function renderFileConversionView(
             <h2 class="text-xs font-semibold text-slate-200">
               Activity log
             </h2>
-            <button
-              type="button"
-              data-action="clear-log"
-              class="text-[11px] text-slate-500 hover:text-slate-300"
-            >
-              Clear
-            </button>
+            <div class="flex items-center gap-3">
+              <label class="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer hover:text-slate-300">
+                <input
+                  type="checkbox"
+                  data-field="debug-logs"
+                  class="w-3.5 h-3.5 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:ring-offset-0"
+                />
+                <span>Debug logs</span>
+              </label>
+              <button
+                type="button"
+                data-action="clear-log"
+                class="text-[11px] text-slate-500 hover:text-slate-300"
+              >
+                Clear
+              </button>
+            </div>
           </div>
           <pre
             data-panel="log"
@@ -140,11 +151,67 @@ export function renderFileConversionView(
   const logPanel = root.querySelector<HTMLPreElement>(
     '[data-panel="log"]',
   );
+  const debugLogsCheckbox = root.querySelector<HTMLInputElement>(
+    '[data-field="debug-logs"]',
+  );
 
-  const appendLog = (message: string) => {
+  // Store all log entries
+  interface LogEntry {
+    level: string;
+    message: string;
+    timestamp: string;
+  }
+  const allLogs: LogEntry[] = [];
+  let showDebugLogs = false;
+
+  const appendLog = (message: string, level: string = "INFO") => {
     if (!logPanel) return;
     const now = new Date().toLocaleTimeString();
-    logPanel.textContent = `${logPanel.textContent ?? ""}[${now}] ${message}\n`;
+    const entry: LogEntry = {
+      level,
+      message,
+      timestamp: now,
+    };
+    allLogs.push(entry);
+    updateLogDisplay();
+  };
+
+  const formatTimestamp = (timestamp: string): string => {
+    // Backend sends UTC timestamps like "2024-01-01 12:00:00.123 UTC"
+    // Convert to local time for display, or use as-is if already formatted
+    try {
+      if (timestamp.includes("UTC")) {
+        const date = new Date(timestamp.replace(" UTC", "Z"));
+        return date.toLocaleTimeString();
+      }
+      return timestamp;
+    } catch {
+      return timestamp;
+    }
+  };
+
+  const updateLogDisplay = () => {
+    if (!logPanel) return;
+    
+    const logsToShow = showDebugLogs
+      ? allLogs
+      : allLogs.filter((log) => 
+          log.level === "INFO" || 
+          log.level === "WARNING" || 
+          log.level === "ERROR"
+        );
+    
+    logPanel.textContent = logsToShow
+      .map((log) => {
+        const formattedTime = formatTimestamp(log.timestamp);
+        const levelPrefix = log.level === "ERROR" ? "❌" : 
+                          log.level === "WARNING" ? "⚠️" : 
+                          log.level === "DEBUG" ? "🔍" : "ℹ️";
+        return `[${formattedTime}] ${levelPrefix} ${log.message}`;
+      })
+      .join("\n");
+    
+    // Auto-scroll to bottom to show latest logs
     logPanel.scrollTop = logPanel.scrollHeight;
   };
 
@@ -156,7 +223,37 @@ export function renderFileConversionView(
     if (logPanel) {
       logPanel.textContent = "";
     }
+    allLogs.length = 0;
   });
+
+  debugLogsCheckbox?.addEventListener("change", (e) => {
+    showDebugLogs = (e.target as HTMLInputElement).checked;
+    updateLogDisplay();
+  });
+
+  // Listen to log-entry events from the backend for real-time updates
+  let logListenerPromise: Promise<void> | null = null;
+  
+  const setupLogListener = () => {
+    if (logListenerPromise) return logListenerPromise;
+    
+    logListenerPromise = listen<LogEntry>("log-entry", (event) => {
+      const entry = event.payload;
+      // Add log entry immediately for real-time display
+      allLogs.push(entry);
+      updateLogDisplay();
+    }).then(() => {
+      // Listener set up successfully
+    }).catch((error) => {
+      console.error("Failed to set up log listener:", error);
+      appendLog(`Failed to set up log listener: ${error}`, "ERROR");
+    });
+    
+    return logListenerPromise;
+  };
+  
+  // Set up listener immediately when view is rendered
+  setupLogListener();
 
   browseFolderButton?.addEventListener("click", async () => {
     try {
@@ -228,19 +325,25 @@ export function renderFileConversionView(
       return;
     }
 
+    // Ensure log listener is set up before starting conversion
+    await setupLogListener();
+
     startButton.disabled = true;
-    appendLog(`Starting conversion for: ${value}`);
+    // Don't manually log here - backend will send logs via events
+    // Just clear any previous logs if needed, or let them accumulate
 
     try {
       // Adapter command; backend is responsible for delegating to the legacy
       // File Conversion logic without duplicating it.
+      // All logs will come through the event listener in real-time
       await invoke("start_file_conversion", { inputPath: value });
-      appendLog("Conversion request completed.");
+      // Backend will send completion log via event
     } catch (error) {
+      // Only log errors that aren't already logged by backend
+      const errorMsg = error instanceof Error ? error.message : String(error);
       appendLog(
-        `Conversion failed: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
+        `Conversion failed: ${errorMsg}`,
+        "ERROR"
       );
     } finally {
       startButton.disabled = false;

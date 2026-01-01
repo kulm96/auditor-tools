@@ -1,12 +1,23 @@
+use crate::ept_logger::EPTLogger;
 use crate::report_model::ReportModel;
 use anyhow::Result;
 use std::fs;
 use std::path::Path;
 use walkdir::WalkDir;
 
-pub struct FileScanner;
+pub struct FileScanner {
+    logger: Option<EPTLogger>,
+}
 
 impl FileScanner {
+    pub fn new() -> Self {
+        Self { logger: None }
+    }
+
+    pub fn with_logger(logger: EPTLogger) -> Self {
+        Self { logger: Some(logger) }
+    }
+
     /// Check if a file should be skipped (common system files)
     fn should_skip_file(file_name: &str) -> bool {
         file_name.starts_with("~$") 
@@ -18,7 +29,16 @@ impl FileScanner {
     }
 
     pub fn scan(root_path: &Path) -> Result<Vec<ReportModel>> {
+        Self::new().scan_with_logging(root_path)
+    }
+
+    pub fn scan_with_logging(&self, root_path: &Path) -> Result<Vec<ReportModel>> {
         let mut entries = Vec::new();
+        let mut file_count = 0;
+        
+        if let Some(ref logger) = self.logger {
+            logger.debug(&format!("Scanning directory: {}", root_path.display()));
+        }
         
         for entry in WalkDir::new(root_path).into_iter().filter_map(|e| e.ok()) {
             let path = entry.path();
@@ -83,8 +103,20 @@ impl FileScanner {
                     );
                     
                     entries.push(report_entry);
+                    file_count += 1;
+                    
+                    // Log every 100 files for progress feedback
+                    if file_count % 100 == 0 {
+                        if let Some(ref logger) = self.logger {
+                            logger.debug(&format!("Scanned {} files so far...", file_count));
+                        }
+                    }
                 }
             }
+        }
+        
+        if let Some(ref logger) = self.logger {
+            logger.info(&format!("File scan complete: found {} files", entries.len()));
         }
         
         Ok(entries)

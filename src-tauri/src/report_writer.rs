@@ -14,7 +14,7 @@ impl ReportWriter {
     }
 
     pub fn generate_report(&self, entries: &[ReportModel], output_path: &Path) -> Result<()> {
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "Generating report: {}",
             output_path.display()
         ));

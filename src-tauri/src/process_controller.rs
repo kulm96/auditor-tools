@@ -115,7 +115,7 @@ impl ProcessController {
             
             let staging_path = parent_dir.join(&staging_folder_name);
             
-            self.logger.info(&format!("Copying folder {} to staging folder {}", 
+            self.logger.debug(&format!("Copying folder {} to staging folder {}", 
                 input_path.display(), staging_path.display()));
             
             self.copy_directory_recursive(input_path, &staging_path)
@@ -138,7 +138,8 @@ impl ProcessController {
     fn scan_files(&mut self, working_path: &Path) -> Result<()> {
         self.logger.info("Scanning and cataloging files...");
         self.emit_progress(0, 0, "Scanning files");
-        self.report_entries = FileScanner::scan(working_path)
+        let scanner = FileScanner::with_logger(self.logger.clone());
+        self.report_entries = scanner.scan_with_logging(working_path)
             .context("File scanner failed")?;
         Ok(())
     }
@@ -216,6 +217,7 @@ impl ProcessController {
             if !file_path.exists() {
                 entry.processed = "No".to_string();
                 entry.skip_reason = Some("File not found".to_string());
+                self.logger.debug(&format!("Skipping non-existent file: {}", file_path.display()));
                 continue;
             }
             
@@ -224,10 +226,27 @@ impl ProcessController {
             let is_llm_readable = ReportModel::is_llm_readable(file_path);
             let needs_processing = is_convertible || is_llm_readable;
             
+            // Log file being processed
+            if needs_processing {
+                self.logger.info(&format!(
+                    "Processing file {}/{}: {}",
+                    processed_count + 1,
+                    conversion_count,
+                    file_path.file_name().and_then(|n| n.to_str()).unwrap_or("unknown")
+                ));
+            } else {
+                self.logger.debug(&format!("Skipping non-convertible file: {}", file_path.display()));
+            }
+            
             // Hash the file
             match hashing_service.hash_file_sha512(file_path) {
                 Ok(hash) => {
+                    // Get hash prefix for logging before moving
+                    let hash_prefix = hash[..16.min(hash.len())].to_string();
                     entry.sha512 = Some(hash);
+                    self.logger.debug(&format!("Hashed file: {} (SHA512: {}...)", 
+                        file_path.display(), 
+                        hash_prefix));
                 }
                 Err(e) => {
                     self.logger.warning(&format!(
@@ -278,10 +297,18 @@ impl ProcessController {
         if is_convertible {
             match conversion_engine.convert_file(file_path, working_path) {
                 Ok(Some(converted_path)) => {
-                    logger.info(&format!(
+                    let relative_file_path = file_path
+                        .strip_prefix(working_path)
+                        .map(|p| p.to_string_lossy().to_string())
+                        .unwrap_or_else(|_| file_path.display().to_string());
+                    let relative_converted_path = converted_path
+                        .strip_prefix(working_path)
+                        .map(|p| p.to_string_lossy().to_string())
+                        .unwrap_or_else(|_| converted_path.display().to_string());
+                    logger.debug(&format!(
                         "Converted {} to {}",
-                        file_path.display(),
-                        converted_path.display()
+                        relative_file_path,
+                        relative_converted_path
                     ));
                     // Extract converted file name
                     let converted_file_name = converted_path
@@ -499,7 +526,7 @@ impl ProcessController {
             }
         }
         
-        self.logger.info(&format!("Successfully copied directory from {} to {}", 
+        self.logger.debug(&format!("Successfully copied directory from {} to {}", 
             src.display(), dst.display()));
         Ok(())
     }

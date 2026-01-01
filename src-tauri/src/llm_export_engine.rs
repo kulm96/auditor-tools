@@ -26,7 +26,7 @@ impl LLMExportEngine {
         root_path: &Path,
         output_path: &Path,
     ) -> Result<()> {
-        self.logger.info(&format!(
+        self.logger.debug(&format!(
             "Starting LLM export to: {}",
             output_path.display()
         ));
@@ -144,10 +144,17 @@ impl LLMExportEngine {
             // Copy the file
             match fs::copy(&source_path, &dest_path) {
                 Ok(_) => {
-                    self.logger.info(&format!(
+                    // Show relative paths in log
+                    let source_relative = source_path.strip_prefix(root_path)
+                        .unwrap_or(&source_path)
+                        .display();
+                    let dest_relative = dest_path.strip_prefix(output_path)
+                        .unwrap_or(&dest_path)
+                        .display();
+                    self.logger.debug(&format!(
                         "Copied: {} -> {}",
-                        source_path.display(),
-                        dest_path.display()
+                        source_relative,
+                        dest_relative
                     ));
                     seen_hashes.insert(hash, dest_path.clone());
                     copied_count += 1;
